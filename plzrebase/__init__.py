@@ -9,6 +9,7 @@ class Plzrebase:
         self.master = getenv('PLZREBASE_BRANCH_TO_COMPARE', 'master')
         self.webhook = getenv('PLZREBASE_SLACK_WEBHOOK_URL')
         self.channel = getenv('PLZREBASE_SLACK_CHANNEL')
+        self.excludes = getenv('PLZREBASE_BRANCH_PREFIX_EXCLUDE', '').split(',')
 
         self.project = getenv('CI_PROJECT_PATH')
         self.branch = getenv('CI_COMMIT_REF_NAME')
@@ -46,6 +47,11 @@ class Plzrebase:
         else:
             print(f'Branch is {self.diff} commits behind. All good.')
 
+    def complain_excluded(self):
+        for prefix in self.excludes:
+            if self.branch.startswith(prefix):
+                print(f'Branch {self.branch} is excluded.')
+                sys.exit(0)
 
     def slack(self):
         if not self.webhook:
@@ -72,6 +78,7 @@ class Plzrebase:
 
 
     def complain(self):
+        self.complain_excluded()
         self.set_diff()
         self.complain_over_threshold()
 
