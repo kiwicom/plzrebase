@@ -49,7 +49,7 @@ class Plzrebase:
 
     def complain_excluded(self):
         for prefix in self.excludes:
-            if prefix and self.branch.startswith(prefix):
+            if prefix and self.branch.startswith(prefix.strip()):
                 print(f'Branch {self.branch} is excluded.')
                 sys.exit(0)
 
